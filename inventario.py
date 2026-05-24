@@ -45,8 +45,36 @@ class Inventario(MDP):
         return range(20 - s + 1)
     
     def recompensa(self, s, a, s_):
-        #TODO: Completar este método
-        pass
+        # el inventario disponible por la mañana
+        disponible = s + a
+        
+        # calculamos la ganancia esperada promediando sobre todas las demandas posibles
+        ganancia_esperada = 0.0
+        for d, prob in self.probs_poisson.items():
+            # stock final del dia para esta demanda d
+            stock_final = max(-10, disponible - d)
+            
+            # unidades vendidas
+            ventas = max(0, min(d, disponible))
+            
+            # ventas perdidas por no tener stock suficiente
+            perdidas = max(0, d - disponible)
+            
+            # balance de ingresos y costos del dia
+            ingreso = self.precio_venta * ventas
+            oportunidad = self.perdida_oportunidad * perdidas
+            almacen = self.costo_almacenamiento * max(0, stock_final)
+            backlog = self.costo_backlog * max(0, -stock_final)
+            
+            ganancia_dia = ingreso - oportunidad - almacen - backlog
+            ganancia_esperada += prob * ganancia_dia
+            
+        # restamos el costo de compra y el costo fijo de pedir unidades por la tarde
+        costo_pedido = self.costo_compra * a
+        if a > 0:
+            costo_pedido += self.costo_fijo_pedido
+            
+        return ganancia_esperada - costo_pedido
         
     def prob_transicion(self, s, a, s_):
         # el inventario que tenemos por la mañana disponible para la venta
