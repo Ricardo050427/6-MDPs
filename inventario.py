@@ -49,8 +49,28 @@ class Inventario(MDP):
         pass
         
     def prob_transicion(self, s, a, s_):
-        #TODO: Completar este método
-        pass
+        # el inventario que tenemos por la mañana disponible para la venta
+        disponible = s + a
+        
+        # no podemos terminar con mas unidades de las que teniamos por la mañana
+        if s_ > disponible:
+            return 0.0
+            
+        # si terminamos en un estado mayor al backlog maximo
+        # significa que la demanda fue exactamente la diferencia
+        if s_ > -10:
+            demanda = disponible - s_
+            return self.probs_poisson.get(demanda, 0.0)
+            
+        # si terminamos en el backlog maximo es porque la demanda
+        # fue mayor o igual a la necesaria para vaciar el stock hasta -10
+        demanda_minima = disponible + 10
+        if demanda_minima <= 0:
+            return 1.0
+            
+        # restamos a 1 la probabilidad de las demandas que no llegan a ese backlog
+        prob_menor = sum(self.probs_poisson.get(d, 0.0) for d in range(demanda_minima))
+        return max(0.0, 1.0 - prob_menor)
                 
     def es_terminal(self, s):
         # es un proceso de decision continuo e infinito, por lo que no hay estados finales
