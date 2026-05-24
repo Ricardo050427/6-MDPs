@@ -41,8 +41,8 @@ class Inventario(MDP):
             self.probs_poisson[k] = (math.exp(-self.lambda_) * (self.lambda_**k)) / math.factorial(k)
     
     def acciones_legales(self, s):
-        #TODO: Completar este método
-        pass
+        # las acciones validas van de 0 hasta la capacidad maxima menos el inventario actual
+        return range(20 - s + 1)
     
     def recompensa(self, s, a, s_):
         #TODO: Completar este método
