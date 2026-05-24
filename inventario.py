@@ -53,8 +53,8 @@ class Inventario(MDP):
         pass
                 
     def es_terminal(self, s):
-        #TODO: Completar este método
-        pass
+        # es un proceso de decision continuo e infinito, por lo que no hay estados finales
+        return False
 
 
 if __name__ == "__main__":
