@@ -17,12 +17,28 @@ class Inventario(MDP):
     
     """    
     
-    def __init__(self, gama,lambda_, ...): #TODO: Agregar lo que se requiera
-        #TODO: Completar el constructor
-        self.gamma = #TODO: Agregar lo que se requiera
-        self.lambda_ = #TODO: Agregar lo que se requiera
-        self.estados = #TODO: Agregar lo que se requiera
-        #TODO: Agregar lo que se requiera
+    def __init__(self, gama, lambda_):
+        # inicializamos el descuento y la media de la demanda
+        self.gama = gama
+        self.gamma = gama # por compatibilidad
+        self.lambda_ = lambda_
+        
+        # los estados van desde el backlog maximo (-10) hasta la capacidad (20)
+        self.estados = tuple(range(-10, 21))
+        
+        # los costos y precios para las recompensas
+        self.precio_venta = 150.0
+        self.costo_compra = 80.0
+        self.costo_fijo_pedido = 40.0
+        self.costo_almacenamiento = 5.0
+        self.costo_backlog = 15.0
+        self.perdida_oportunidad = 70.0 # margen de venta perdido (150 - 80)
+        
+        # se precalculan las probabilidades de poisson de la demanda de 0 a 50
+        import math
+        self.probs_poisson = {}
+        for k in range(51):
+            self.probs_poisson[k] = (math.exp(-self.lambda_) * (self.lambda_**k)) / math.factorial(k)
     
     def acciones_legales(self, s):
         #TODO: Completar este método
@@ -43,9 +59,9 @@ class Inventario(MDP):
 
 if __name__ == "__main__":
 
-    inventario = Inventario(0.9, 0.5, ...)  #TODO: Agregar lo que se requiera
+    inventario = Inventario(0.9, 0.5, ...)  #TODO:
 
-    pi_star, V = iteracion_valor(inventario, ...) #TODO: Agregar lo que se requiera
+    pi_star, V = iteracion_valor(inventario, ...) #TODO:
 
     print("-" * 60)
     print("Estado".center(20) + "Acción".center(20) + "Valor".center(20))
