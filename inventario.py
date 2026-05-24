@@ -107,9 +107,9 @@ class Inventario(MDP):
 
 if __name__ == "__main__":
 
-    inventario = Inventario(0.9, 0.5, ...)  #TODO:
+    inventario = Inventario(0.95, 4.0)
 
-    pi_star, V = iteracion_valor(inventario, ...) #TODO:
+    pi_star, V = iteracion_valor(inventario, epsilon=1e-4)
 
     print("-" * 60)
     print("Estado".center(20) + "Acción".center(20) + "Valor".center(20))
@@ -120,15 +120,42 @@ if __name__ == "__main__":
 
 
 """
-Contesta las preguntas aquí mismo (has espacio entre las preguntas):
+contesta las preguntas aquí mismo (has espacio entre las preguntas):
 
 1. ¿Cómo se comporta las transiciones y las ganancias para casos específicos de $s$ y $a$? 
-2. ¿Qué psa si hay mucho almacen? 
+- Si el inventario disponible en la mañana (s + a) es alto, la probabilidad de terminar con stock
+positivo es alta, maximizando ventas pero aumentando el costo de almacenar, si (s + a) es bajo, la
+probabilidad de caer en backlog es alta, lo que genera costos de penalizacion por backlog (15) y
+perdida de oportunidad (70).
+
+2. ¿Qué pasa si hay mucho almacen? 
+- Si el inventario al final del dia es alto (s >= 6), la accion optima seria no pedir nada (a = 0) para
+ahorrar el costo fijo de pedido (40) y evitar acumular mas costos de almacenamiento (5 por unidad).
+
 3. ¿Que pasa si hay muy poco o estamos sin almacen? 
+- Si tenemos poco stock o estamos en negativo (s <= 5), el costo por backlog y ventas perdidas es
+muy alto, por lo que la politica optima hace que se tenga que pedir la cantidad necesaria para alcanzar el
+stock de la mañana.
+
 4. ¿Existe un punto donde la ganancia sea máxima?  
+- Si existe, para una demanda promedio de 4, el stock ideal por la mañana es de 9
+unidades, esto cubre la demanda con alta probabilidad y minimiza los costos combinados de pedir,
+almacenar y desabasto.
+
 ---
-5. ¿Cómo se ve la política óptima? ¿Tiene sentido?
-6. ¿Como se comporta la función de valor de estado V(s)?
+5. ¿Cómo se ve la política óptima? ¿tiene sentido?
+- Se comporta como una politica (s, S) o de nivel de reorden por que si el stock al final del dia cae a
+5 o menos, pedimos lo necesario para llegar a 9, si es 6 o mas, no pedimos nada, tiene todo el sentido
+porque evita pedir muy seguido (ahorra el costo fijo) y mantiene un nivel de seguridad contra desabasto.
+
+6. ¿Como se comporta la función de valor de estado v(s)?
+- Es estrictamente creciente, a mayor inventario inicial al final del dia, mayor es el valor esperado a
+largo plazo, ya que contar con stock reduce la necesidad de pedir inmediatamente (ahorrando costos de
+pedido) y disminuye la probabilidad de desabasto en el siguiente paso.
+
 7. ¿Cómo cambiaría la política si la variabilidad de la demanda (lambda) aumenta de 4 a 8?
+- Al duplicarse la demanda promedio, el stock objetivo por la mañana (S) tendra que subir (probablemente
+a unas 13 o 14 unidades) y el umbral de reorden (s) tambien subira para protegerse contra una demanda
+promedio mayor y mas variable.
 
 """
